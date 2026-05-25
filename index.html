@@ -8,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
-
+ 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --spice: #C0392B;
     --spice-light: #FADBD8;
@@ -29,7 +29,7 @@
     --red: #E74C3C;
     --red-light: #FADBD8;
   }
-
+ 
   body {
     background: var(--bg);
     color: var(--text);
@@ -38,7 +38,7 @@
     display: flex;
     flex-direction: column;
   }
-
+ 
   .header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -49,7 +49,7 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-
+ 
   .header-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 2rem;
@@ -59,41 +59,41 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
+ 
   .header-sub {
     font-size: 12px;
     color: var(--muted);
     letter-spacing: 1px;
     text-transform: uppercase;
   }
-
+ 
   .stats-bar {
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
   }
-
+ 
   .stat {
     text-align: center;
   }
-
+ 
   .stat-num {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.6rem;
     letter-spacing: 1px;
   }
-
+ 
   .stat-label {
     font-size: 10px;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-
+ 
   .stat.spice .stat-num { color: var(--spice); }
   .stat.sugar .stat-num { color: #3498DB; }
   .stat.total .stat-num { color: var(--green); }
-
+ 
   .tab-bar {
     display: flex;
     background: var(--surface);
@@ -101,7 +101,7 @@
     padding: 0 2rem;
     gap: 0;
   }
-
+ 
   .tab {
     padding: 1rem 2rem;
     cursor: pointer;
@@ -118,19 +118,19 @@
     border-right: none;
     color: var(--muted);
   }
-
+ 
   .tab.active {
     color: var(--text);
     border-bottom-color: #F39C12;
   }
-
+ 
   .tab:hover:not(.active) { color: #ccc; }
-
+ 
   .main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; }
-
+ 
   .page { display: none; }
   .page.active { display: block; }
-
+ 
   /* GENERATE PAGE */
   .stall-grid {
     display: grid;
@@ -138,13 +138,13 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
-
+ 
   @media (max-width: 600px) {
     .stall-grid { grid-template-columns: 1fr; }
     .main { padding: 1rem; }
     .tab { padding: 0.75rem 1rem; font-size: 11px; }
   }
-
+ 
   .stall-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -154,28 +154,28 @@
     flex-direction: column;
     gap: 1rem;
   }
-
+ 
   .stall-card.spice { border-top: 3px solid var(--spice); }
   .stall-card.sugar { border-top: 3px solid #3498DB; }
-
+ 
   .stall-name {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.6rem;
     letter-spacing: 2px;
   }
-
+ 
   .stall-card.spice .stall-name { color: var(--spice); }
   .stall-card.sugar .stall-name { color: #3498DB; }
-
+ 
   .stall-emoji { font-size: 2rem; }
-
+ 
   .price-input-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
   }
-
+ 
   .price-input-row label {
     font-size: 12px;
     color: var(--muted);
@@ -183,7 +183,7 @@
     letter-spacing: 0.5px;
     white-space: nowrap;
   }
-
+ 
   input[type="number"], input[type="text"] {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -194,18 +194,18 @@
     font-size: 14px;
     width: 90px;
   }
-
+ 
   input[type="number"]:focus, input[type="text"]:focus {
     outline: none;
     border-color: #F39C12;
   }
-
+ 
   .qty-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
-
+ 
   .qty-btn {
     width: 32px;
     height: 32px;
@@ -221,16 +221,16 @@
     transition: background 0.15s;
     font-family: monospace;
   }
-
+ 
   .qty-btn:hover { background: #333; }
-
+ 
   .qty-val {
     font-size: 20px;
     font-weight: 600;
     min-width: 28px;
     text-align: center;
   }
-
+ 
   .gen-btn {
     padding: 0.75rem 1.5rem;
     border-radius: 10px;
@@ -242,24 +242,24 @@
     transition: transform 0.15s, opacity 0.15s;
     width: 100%;
   }
-
+ 
   .gen-btn:active { transform: scale(0.97); }
-
+ 
   .stall-card.spice .gen-btn {
     background: var(--spice);
     color: #fff;
   }
-
+ 
   .stall-card.sugar .gen-btn {
     background: #3498DB;
     color: #fff;
   }
-
+ 
   .gen-btn:hover { opacity: 0.9; }
-
+ 
   /* TOKENS TABLE */
   .tokens-section { margin-top: 2rem; }
-
+ 
   .section-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.3rem;
@@ -267,20 +267,20 @@
     color: var(--muted);
     margin-bottom: 1rem;
   }
-
+ 
   .token-table-wrap {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
   }
-
+ 
   table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
   }
-
+ 
   th {
     background: var(--surface2);
     padding: 0.75rem 1rem;
@@ -291,15 +291,15 @@
     font-size: 11px;
     letter-spacing: 0.5px;
   }
-
+ 
   td {
     padding: 0.75rem 1rem;
     border-top: 1px solid var(--border);
     vertical-align: middle;
   }
-
+ 
   tr:hover td { background: rgba(255,255,255,0.02); }
-
+ 
   .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -308,21 +308,21 @@
     font-weight: 600;
     letter-spacing: 0.3px;
   }
-
+ 
   .badge.spice { background: var(--spice); color: #fff; }
   .badge.sugar { background: #3498DB; color: #fff; }
   .badge.used { background: #333; color: var(--muted); }
   .badge.valid { background: #1E3A2A; color: #2ECC71; }
-
+ 
   .token-code {
     font-family: monospace;
     font-size: 12px;
     color: var(--muted);
     letter-spacing: 1px;
   }
-
+ 
   .amount { font-weight: 600; }
-
+ 
   /* QR MODAL */
   .modal-overlay {
     display: none;
@@ -333,9 +333,9 @@
     align-items: center;
     justify-content: center;
   }
-
+ 
   .modal-overlay.open { display: flex; }
-
+ 
   .modal {
     background: var(--surface);
     border-radius: 20px;
@@ -346,7 +346,7 @@
     border: 1px solid var(--border);
     position: relative;
   }
-
+ 
   .modal-close {
     position: absolute;
     top: 1rem;
@@ -358,36 +358,36 @@
     cursor: pointer;
     line-height: 1;
   }
-
+ 
   .modal-stall {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.8rem;
     letter-spacing: 2px;
     margin-bottom: 0.25rem;
   }
-
+ 
   .modal-token { font-size: 11px; color: var(--muted); font-family: monospace; margin-bottom: 1.5rem; }
-
+ 
   #qrcode-container {
     display: flex;
     justify-content: center;
     margin: 1rem 0;
   }
-
+ 
   #qrcode-container canvas, #qrcode-container img {
     border-radius: 12px;
     border: 4px solid #fff;
   }
-
+ 
   .modal-amount {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 2.5rem;
     letter-spacing: 2px;
     margin: 1rem 0 0.25rem;
   }
-
+ 
   .modal-items { font-size: 12px; color: var(--muted); }
-
+ 
   .print-btn {
     margin-top: 1.25rem;
     padding: 0.6rem 1.5rem;
@@ -400,27 +400,27 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-
+ 
   .print-btn:hover { background: #333; }
-
+ 
   /* SCAN PAGE */
   .scan-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
   }
-
+ 
   @media (max-width: 700px) {
     .scan-layout { grid-template-columns: 1fr; }
   }
-
+ 
   .scan-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.5rem;
   }
-
+ 
   .scan-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.2rem;
@@ -428,24 +428,24 @@
     color: var(--muted);
     margin-bottom: 1rem;
   }
-
+ 
   #reader {
     width: 100%;
     border-radius: 10px;
     overflow: hidden;
   }
-
+ 
   .manual-row {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
   }
-
+ 
   .manual-row input[type="text"] {
     flex: 1;
     width: auto;
   }
-
+ 
   .scan-btn {
     padding: 0.5rem 1rem;
     border-radius: 8px;
@@ -459,9 +459,9 @@
     transition: opacity 0.15s;
     white-space: nowrap;
   }
-
+ 
   .scan-btn:hover { opacity: 0.85; }
-
+ 
   /* Result display */
   .result-box {
     background: var(--surface2);
@@ -477,25 +477,25 @@
     transition: all 0.3s;
     border: 2px solid transparent;
   }
-
+ 
   .result-box.success { border-color: var(--green); background: #0D2018; }
   .result-box.error { border-color: var(--red); background: #1E0A0A; }
   .result-box.idle { border-color: var(--border); }
-
+ 
   .result-icon { font-size: 3rem; }
   .result-status {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.6rem;
     letter-spacing: 2px;
   }
-
+ 
   .result-box.success .result-status { color: #2ECC71; }
   .result-box.error .result-status { color: var(--red); }
-
+ 
   .result-detail { font-size: 13px; color: var(--muted); }
   .result-amount { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #F39C12; }
   .result-stall-badge { font-size: 12px; }
-
+ 
   /* HISTORY PAGE */
   .filter-row {
     display: flex;
@@ -504,7 +504,7 @@
     flex-wrap: wrap;
     align-items: center;
   }
-
+ 
   .filter-btn {
     padding: 0.4rem 1rem;
     border-radius: 20px;
@@ -515,25 +515,25 @@
     cursor: pointer;
     transition: all 0.15s;
   }
-
+ 
   .filter-btn.active, .filter-btn:hover {
     background: #F39C12;
     color: #000;
     border-color: #F39C12;
   }
-
+ 
   .empty-state {
     text-align: center;
     color: var(--muted);
     padding: 3rem;
     font-size: 14px;
   }
-
+ 
   .time-cell { font-size: 11px; color: var(--muted); }
 </style>
 </head>
 <body>
-
+ 
 <div class="header">
   <div>
     <div class="header-title">🎪 FoodFest Billing</div>
@@ -554,20 +554,20 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="tab-bar">
   <button class="tab active" onclick="switchPage('generate')">Generate Tokens</button>
   <button class="tab" onclick="switchPage('scan')">Scan & Verify</button>
   <button class="tab" onclick="switchPage('history')">History</button>
   <button class="tab" onclick="switchPage('settings')">⚙ Settings</button>
 </div>
-
+ 
 <div class="main">
-
+ 
   <!-- GENERATE PAGE -->
   <div class="page active" id="page-generate">
     <div class="stall-grid">
-
+ 
       <!-- SPICE STALL -->
       <div class="stall-card spice">
         <div>
@@ -591,7 +591,7 @@
         </div>
         <button class="gen-btn" onclick="generateToken('spice')">Generate Token</button>
       </div>
-
+ 
       <!-- SUGAR STALL -->
       <div class="stall-card sugar">
         <div>
@@ -615,9 +615,9 @@
         </div>
         <button class="gen-btn" onclick="generateToken('sugar')">Generate Token</button>
       </div>
-
+ 
     </div>
-
+ 
     <div class="tokens-section">
       <div class="section-title">Recent Tokens</div>
       <div class="token-table-wrap">
@@ -639,13 +639,13 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- SCAN PAGE -->
   <div class="page" id="page-scan">
     <div class="scan-layout">
       <div class="scan-card">
         <div class="scan-title">📷 Scan QR Code</div>
-
+ 
         <!-- camera viewport -->
         <div style="position:relative;width:100%;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:1;">
           <video id="qr-video" style="width:100%;height:100%;object-fit:cover;display:block;" playsinline muted></video>
@@ -657,18 +657,18 @@
           <!-- status chip -->
           <div id="cam-chip" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;font-size:12px;padding:4px 12px;border-radius:20px;white-space:nowrap;display:none;"></div>
         </div>
-
+ 
         <button class="scan-btn" id="camera-btn" onclick="toggleCamera()"
           style="width:100%;margin-top:0.75rem;background:var(--surface2);color:var(--text);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0;padding:0.65rem;">
           📷 Start Camera
         </button>
-
+ 
         <div class="manual-row" style="margin-top:0.75rem;">
           <input type="text" id="manual-token" placeholder="Or enter token ID manually..." />
           <button class="scan-btn" onclick="verifyManual()">Verify</button>
         </div>
       </div>
-
+ 
       <div class="scan-card">
         <div class="scan-title">✅ Verification Result</div>
         <div class="result-box idle" id="result-box">
@@ -676,7 +676,7 @@
           <div class="result-status" style="color:var(--muted)">Waiting</div>
           <div class="result-detail">Scan or enter a token to verify</div>
         </div>
-
+ 
         <div style="margin-top:1rem;">
           <div class="scan-title" style="margin-top:0.5rem;">Recent Scans</div>
           <div id="recent-scans" style="display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto;"></div>
@@ -684,12 +684,12 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- SETTINGS PAGE -->
   <div class="page" id="page-settings">
     <div style="max-width:560px;">
       <div class="section-title" style="margin-bottom:1.5rem;">Twilio WhatsApp Notifications</div>
-
+ 
       <div class="stall-card" style="border-top:3px solid #25D366; gap:1.25rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;">
           <span style="font-size:1.8rem;">💬</span>
@@ -704,7 +704,7 @@
             </label>
           </div>
         </div>
-
+ 
         <div style="display:flex;flex-direction:column;gap:0.75rem;">
           <div class="price-input-row" style="flex-direction:column;align-items:flex-start;gap:0.4rem;">
             <label>Account SID</label>
@@ -723,14 +723,14 @@
             <span style="font-size:11px;color:var(--muted);">Find this in Twilio Console → Messaging → Try it out → Send a WhatsApp message</span>
           </div>
         </div>
-
+ 
         <button class="scan-btn" onclick="testWhatsApp()" style="width:100%;background:#25D366;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0;padding:0.75rem;">
           Send Test Message
         </button>
-
+ 
         <div id="wa-status" style="font-size:12px;color:var(--muted);text-align:center;min-height:18px;"></div>
       </div>
-
+ 
       <div class="stall-card" style="margin-top:1.5rem;gap:0.75rem;">
         <div style="font-weight:600;font-size:14px;">📋 Setup Guide</div>
         <ol style="font-size:13px;color:var(--muted);padding-left:1.25rem;line-height:2;">
@@ -744,7 +744,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- HISTORY PAGE -->
   <div class="page" id="page-history">
     <div class="filter-row">
@@ -774,9 +774,9 @@
       </table>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- QR MODAL -->
 <div class="modal-overlay" id="qr-modal">
   <div class="modal">
@@ -789,12 +789,12 @@
     <button class="print-btn" onclick="window.print()">🖨 Print Token</button>
   </div>
 </div>
-
+ 
 <script>
 let tokens = JSON.parse(localStorage.getItem('ff_tokens') || '{}');
 let qty = { spice: 1, sugar: 1 };
 let currentFilter = 'all';
-
+ 
 // ── Twilio Settings ──────────────────────────────────────────
 function saveSettings() {
   const cfg = {
@@ -805,7 +805,7 @@ function saveSettings() {
   };
   localStorage.setItem('ff_twilio', JSON.stringify(cfg));
 }
-
+ 
 function loadSettings() {
   const cfg = JSON.parse(localStorage.getItem('ff_twilio') || '{}');
   if (cfg.sid)     document.getElementById('twilio-sid').value   = cfg.sid;
@@ -813,20 +813,20 @@ function loadSettings() {
   if (cfg.from)    document.getElementById('twilio-from').value  = cfg.from;
   if (cfg.enabled) document.getElementById('wa-enabled').checked = cfg.enabled;
 }
-
+ 
 function getTwilioCfg() {
   return JSON.parse(localStorage.getItem('ff_twilio') || '{}');
 }
-
+ 
 async function sendWhatsApp(message) {
   const cfg = getTwilioCfg();
   if (!cfg.enabled || !cfg.sid || !cfg.token || !cfg.from) return;
-
+ 
   const to = 'whatsapp:+916360290846';
   const from = 'whatsapp:' + cfg.from;
   const url = `https://api.twilio.com/2010-04-01/Accounts/${cfg.sid}/Messages.json`;
   const creds = btoa(cfg.sid + ':' + cfg.token);
-
+ 
   try {
     const body = new URLSearchParams({ To: to, From: from, Body: message });
     const res = await fetch(url, {
@@ -850,7 +850,7 @@ async function sendWhatsApp(message) {
     return false;
   }
 }
-
+ 
 async function testWhatsApp() {
   const status = document.getElementById('wa-status');
   status.style.color = 'var(--muted)';
@@ -864,12 +864,12 @@ async function testWhatsApp() {
     status.textContent = '❌ Failed — check your SID, token and sandbox number.';
   }
 }
-
+ 
 function save() {
   localStorage.setItem('ff_tokens', JSON.stringify(tokens));
   updateStats();
 }
-
+ 
 function updateStats() {
   const all = Object.values(tokens);
   const spice = all.filter(t => t.stall === 'spice');
@@ -879,33 +879,33 @@ function updateStats() {
   document.getElementById('stat-sugar').textContent = sugar.length;
   document.getElementById('stat-revenue').textContent = '₹' + revenue;
 }
-
+ 
 function genId() {
   return Math.random().toString(36).substr(2, 8).toUpperCase();
 }
-
+ 
 function changeQty(stall, delta) {
   qty[stall] = Math.max(1, (qty[stall] || 1) + delta);
   document.getElementById(stall + '-qty').textContent = qty[stall];
   recalcTotal(stall);
 }
-
+ 
 function recalcTotal(stall) {
   const price = parseInt(document.getElementById(stall + '-price').value) || 0;
   const q = qty[stall] || 1;
   document.getElementById(stall + '-total').textContent = '₹' + (price * q);
 }
-
+ 
 document.getElementById('spice-price').addEventListener('input', () => recalcTotal('spice'));
 document.getElementById('sugar-price').addEventListener('input', () => recalcTotal('sugar'));
-
+ 
 function generateToken(stall) {
   const price = parseInt(document.getElementById(stall + '-price').value) || 0;
   const q = qty[stall] || 1;
   const amount = price * q;
   const id = stall.toUpperCase().substr(0, 3) + '-' + genId();
   const now = new Date();
-
+ 
   tokens[id] = {
     id,
     stall,
@@ -916,25 +916,25 @@ function generateToken(stall) {
     createdAt: now.toISOString(),
     usedAt: null
   };
-
+ 
   save();
   renderTokenList();
   renderHistory();
   showQR(id);
 }
-
+ 
 function showQR(tokenId) {
   const t = tokens[tokenId];
   const modal = document.getElementById('qr-modal');
   const emoji = t.stall === 'spice' ? '🌶️' : '🍬';
   const color = t.stall === 'spice' ? '#C0392B' : '#3498DB';
-
+ 
   document.getElementById('modal-stall-name').textContent = emoji + ' ' + t.stall.toUpperCase();
   document.getElementById('modal-stall-name').style.color = color;
   document.getElementById('modal-token-id').textContent = tokenId;
   document.getElementById('modal-amount').textContent = '₹' + t.amount;
   document.getElementById('modal-items').textContent = t.qty + ' item(s) × ₹' + t.price;
-
+ 
   const container = document.getElementById('qrcode-container');
   container.innerHTML = '';
   new QRCode(container, {
@@ -945,14 +945,14 @@ function showQR(tokenId) {
     colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.H
   });
-
+ 
   modal.classList.add('open');
 }
-
+ 
 function closeModal() {
   document.getElementById('qr-modal').classList.remove('open');
 }
-
+ 
 function renderTokenList() {
   const body = document.getElementById('token-list-body');
   const all = Object.values(tokens).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 20);
@@ -971,7 +971,7 @@ function renderTokenList() {
     </tr>
   `).join('');
 }
-
+ 
 function renderHistory(filter) {
   filter = filter || currentFilter;
   const body = document.getElementById('history-body');
@@ -980,7 +980,7 @@ function renderHistory(filter) {
   else if (filter === 'sugar') all = all.filter(t => t.stall === 'sugar');
   else if (filter === 'used') all = all.filter(t => t.used);
   else if (filter === 'valid') all = all.filter(t => !t.used);
-
+ 
   if (!all.length) {
     body.innerHTML = '<tr><td colspan="7" class="empty-state">No records</td></tr>';
     return;
@@ -997,14 +997,14 @@ function renderHistory(filter) {
     </tr>
   `).join('');
 }
-
+ 
 function filterHistory(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderHistory(f);
 }
-
+ 
 function clearHistory() {
   if (confirm('Clear ALL token data? This cannot be undone.')) {
     tokens = {};
@@ -1013,12 +1013,12 @@ function clearHistory() {
     renderHistory();
   }
 }
-
+ 
 function verifyToken(tokenId) {
   tokenId = tokenId.trim().toUpperCase();
   const box = document.getElementById('result-box');
   box.className = 'result-box';
-
+ 
   if (!tokens[tokenId]) {
     box.classList.add('error');
     box.innerHTML = `
@@ -1029,9 +1029,9 @@ function verifyToken(tokenId) {
     addRecentScan(tokenId, 'invalid');
     return;
   }
-
+ 
   const t = tokens[tokenId];
-
+ 
   if (t.used) {
     box.classList.add('error');
     const usedAt = t.usedAt ? fmtTime(t.usedAt) : 'earlier';
@@ -1045,14 +1045,14 @@ function verifyToken(tokenId) {
     addRecentScan(tokenId, 'used');
     return;
   }
-
+ 
   // Mark as used
   tokens[tokenId].used = true;
   tokens[tokenId].usedAt = new Date().toISOString();
   save();
   renderTokenList();
   renderHistory();
-
+ 
   // 🔔 WhatsApp notification
   const stallLabel = t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar';
   const waMsg = `🎪 FoodFest Order Placed!\n\n` +
@@ -1062,7 +1062,7 @@ function verifyToken(tokenId) {
     `Total: ₹${t.amount}\n` +
     `Time: ${new Date().toLocaleTimeString()}`;
   sendWhatsApp(waMsg);
-
+ 
   box.classList.add('success');
   box.innerHTML = `
     <div class="result-icon">✅</div>
@@ -1073,7 +1073,7 @@ function verifyToken(tokenId) {
   `;
   addRecentScan(tokenId, 'accepted');
 }
-
+ 
 function addRecentScan(tokenId, status) {
   const el = document.createElement('div');
   const colors = { accepted: '#27AE60', used: '#E74C3C', invalid: '#888' };
@@ -1084,7 +1084,7 @@ function addRecentScan(tokenId, status) {
   container.prepend(el);
   while (container.children.length > 6) container.removeChild(container.lastChild);
 }
-
+ 
 function verifyManual() {
   const val = document.getElementById('manual-token').value;
   if (val.trim()) {
@@ -1092,83 +1092,121 @@ function verifyManual() {
     document.getElementById('manual-token').value = '';
   }
 }
-
+ 
 document.getElementById('manual-token').addEventListener('keydown', e => {
   if (e.key === 'Enter') verifyManual();
 });
-
+ 
 // ── Camera / jsQR scanner ────────────────────────────────────
 let cameraActive = false;
 let videoStream = null;
 let scanLoop = null;
 let lastScanned = '';
 let lastScannedAt = 0;
-
+let frameCount = 0;
+ 
 function toggleCamera() {
   cameraActive ? stopCamera() : startCamera();
 }
-
+ 
 async function startCamera() {
   const btn = document.getElementById('camera-btn');
   const chip = document.getElementById('cam-chip');
   btn.textContent = 'Starting…';
   btn.disabled = true;
-
+ 
   try {
+    // Ask for high-res back camera explicitly for better QR detection
     videoStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+      video: {
+        facingMode: { ideal: 'environment' },
+        width:  { ideal: 1920 },
+        height: { ideal: 1080 }
+      }
     });
   } catch (err) {
-    btn.textContent = '📷 Start Camera';
-    btn.disabled = false;
-    const msg = err.name === 'NotAllowedError'
-      ? '❌ Camera permission denied.\n\nFix: Click the 🔒 lock icon in your browser address bar → Site settings → Camera → Allow → Refresh.'
-      : '❌ Camera error: ' + err.message + '\n\nTry using the manual token entry below.';
-    alert(msg);
-    return;
+    // Fallback: try with minimal constraints
+    try {
+      videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    } catch (err2) {
+      btn.textContent = '📷 Start Camera';
+      btn.disabled = false;
+      const msg = err2.name === 'NotAllowedError'
+        ? '❌ Camera permission denied.\n\nOn your phone:\nSettings → Chrome/Safari → Camera → Allow\n\nThen reload the page.'
+        : '❌ Camera error: ' + err2.message;
+      alert(msg);
+      return;
+    }
   }
-
+ 
   const video = document.getElementById('qr-video');
   video.srcObject = videoStream;
-  await video.play();
-
+ 
+  // Wait for video to actually be playing with real dimensions
+  await new Promise(resolve => {
+    video.onloadedmetadata = () => { video.play().then(resolve); };
+  });
+ 
+  // Extra 1.5s delay — lets phone camera autofocus and settle
+  await new Promise(r => setTimeout(r, 1500));
+ 
   cameraActive = true;
+  frameCount = 0;
   btn.textContent = '⏹ Stop Camera';
   btn.disabled = false;
   btn.style.color = '#E74C3C';
-
+ 
   document.getElementById('scan-overlay').style.display = 'block';
   chip.style.display = 'block';
-  chip.textContent = '🔍 Scanning…';
-
+  chip.style.color = '#fff';
+  chip.textContent = '🔍 Scanning… hold steady';
+ 
   const canvas = document.getElementById('qr-canvas');
-  const ctx = canvas.getContext('2d');
-
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+ 
   function tick() {
     if (!cameraActive) return;
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width  = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-      if (code && code.data) {
+ 
+    frameCount++;
+    // Only scan every 6th frame (~10fps on 60fps screen) — gives CPU breathing room
+    if (frameCount % 6 === 0 && video.readyState === video.HAVE_ENOUGH_DATA) {
+ 
+      // Downscale to max 640px wide — jsQR works best at lower res
+      const scale = Math.min(1, 640 / video.videoWidth);
+      const w = Math.floor(video.videoWidth  * scale);
+      const h = Math.floor(video.videoHeight * scale);
+ 
+      canvas.width  = w;
+      canvas.height = h;
+      ctx.drawImage(video, 0, 0, w, h);
+ 
+      const img = ctx.getImageData(0, 0, w, h);
+ 
+      // Try both normal and inverted — handles dark-on-light AND light-on-dark QRs
+      let code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
+ 
+      if (code && code.data && code.data.trim()) {
         const now = Date.now();
         if (code.data !== lastScanned || now - lastScannedAt > 3000) {
-          lastScanned = code.data;
-          lastScannedAt = now;
-          chip.textContent = '✅ QR detected!';
+          lastScanned    = code.data;
+          lastScannedAt  = now;
+          chip.textContent = '✅ Got it!';
           chip.style.color = '#2ECC71';
+          // Small vibration feedback on mobile
+          if (navigator.vibrate) navigator.vibrate(100);
           verifyToken(code.data);
-          setTimeout(() => { chip.textContent = '🔍 Scanning…'; chip.style.color = '#fff'; }, 2000);
+          setTimeout(() => {
+            if (cameraActive) { chip.textContent = '🔍 Scanning… hold steady'; chip.style.color = '#fff'; }
+          }, 2500);
         }
       }
     }
+ 
     scanLoop = requestAnimationFrame(tick);
   }
   scanLoop = requestAnimationFrame(tick);
 }
-
+ 
 function stopCamera() {
   cameraActive = false;
   if (scanLoop) { cancelAnimationFrame(scanLoop); scanLoop = null; }
@@ -1181,7 +1219,7 @@ function stopCamera() {
   btn.textContent = '📷 Start Camera';
   btn.style.color = '';
 }
-
+ 
 function switchPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1190,12 +1228,12 @@ function switchPage(page) {
   if (page !== 'scan' && cameraActive) stopCamera();
   if (page === 'history') renderHistory();
 }
-
+ 
 function fmtTime(iso) {
   const d = new Date(iso);
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + d.toLocaleDateString([], { day: '2-digit', month: 'short' });
 }
-
+ 
 // Init
 loadSettings();
 updateStats();
