@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodFest Token System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --spice: #C0392B;
+    --spice-light: #FADBD8;
+    --spice-dark: #7B241C;
+    --sugar: #1A5276;
+    --sugar-light: #D6EAF8;
+    --sugar-dark: #154360;
+    --bg: #0D0D0D;
+    --surface: #1A1A1A;
+    --surface2: #242424;
+    --border: rgba(255,255,255,0.08);
+    --text: #F0F0F0;
+    --muted: #888;
+    --green: #27AE60;
+    --green-light: #D5F5E3;
+    --red: #E74C3C;
+    --red-light: #FADBD8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #C0392B, #F39C12, #1A5276);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat.spice .stat-num { color: var(--spice); }
+  .stat.sugar .stat-num { color: #3498DB; }
+  .stat.total .stat-num { color: var(--green); }
+
+  .tab-bar {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 1rem 2rem;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    color: var(--muted);
+  }
+
+  .tab.active {
+    color: var(--text);
+    border-bottom-color: #F39C12;
+  }
+
+  .tab:hover:not(.active) { color: #ccc; }
+
+  .main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* GENERATE PAGE */
+  .stall-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .stall-grid { grid-template-columns: 1fr; }
+    .main { padding: 1rem; }
+    .tab { padding: 0.75rem 1rem; font-size: 11px; }
+  }
+
+  .stall-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stall-card.spice { border-top: 3px solid var(--spice); }
+  .stall-card.sugar { border-top: 3px solid #3498DB; }
+
+  .stall-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+  }
+
+  .stall-card.spice .stall-name { color: var(--spice); }
+  .stall-card.sugar .stall-name { color: #3498DB; }
+
+  .stall-emoji { font-size: 2rem; }
+
+  .price-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .price-input-row label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  input[type="number"], input[type="text"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    width: 90px;
+  }
+
+  input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #F39C12;
+  }
+
+  .qty-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .qty-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    font-family: monospace;
+  }
+
+  .qty-btn:hover { background: #333; }
+
+  .qty-val {
+    font-size: 20px;
+    font-weight: 600;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .gen-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+    width: 100%;
+  }
+
+  .gen-btn:active { transform: scale(0.97); }
+
+  .stall-card.spice .gen-btn {
+    background: var(--spice);
+    color: #fff;
+  }
+
+  .stall-card.sugar .gen-btn {
+    background: #3498DB;
+    color: #fff;
+  }
+
+  .gen-btn:hover { opacity: 0.9; }
+
+  /* TOKENS TABLE */
+  .tokens-section { margin-top: 2rem; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .token-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge.spice { background: var(--spice); color: #fff; }
+  .badge.sugar { background: #3498DB; color: #fff; }
+  .badge.used { background: #333; color: var(--muted); }
+  .badge.valid { background: #1E3A2A; color: #2ECC71; }
+
+  .token-code {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .amount { font-weight: 600; }
+
+  /* QR MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-stall {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+  }
+
+  .modal-token { font-size: 11px; color: var(--muted); font-family: monospace; margin-bottom: 1.5rem; }
+
+  #qrcode-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  #qrcode-container canvas, #qrcode-container img {
+    border-radius: 12px;
+    border: 4px solid #fff;
+  }
+
+  .modal-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    margin: 1rem 0 0.25rem;
+  }
+
+  .modal-items { font-size: 12px; color: var(--muted); }
+
+  .print-btn {
+    margin-top: 1.25rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .print-btn:hover { background: #333; }
+
+  /* SCAN PAGE */
+  .scan-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .scan-layout { grid-template-columns: 1fr; }
+  }
+
+  .scan-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .scan-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  #reader {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .manual-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .manual-row input[type="text"] {
+    flex: 1;
+    width: auto;
+  }
+
+  .scan-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: #F39C12;
+    border: none;
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+
+  .scan-btn:hover { opacity: 0.85; }
+
+  /* Result display */
+  .result-box {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+  }
+
+  .result-box.success { border-color: var(--green); background: #0D2018; }
+  .result-box.error { border-color: var(--red); background: #1E0A0A; }
+  .result-box.idle { border-color: var(--border); }
+
+  .result-icon { font-size: 3rem; }
+  .result-status {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+  }
+
+  .result-box.success .result-status { color: #2ECC71; }
+  .result-box.error .result-status { color: var(--red); }
+
+  .result-detail { font-size: 13px; color: var(--muted); }
+  .result-amount { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #F39C12; }
+  .result-stall-badge { font-size: 12px; }
+
+  /* HISTORY PAGE */
+  .filter-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: #F39C12;
+    color: #000;
+    border-color: #F39C12;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 3rem;
+    font-size: 14px;
+  }
+
+  .time-cell { font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">🎪 FoodFest Billing</div>
+    <div class="header-sub">Token QR System</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat spice">
+      <div class="stat-num" id="stat-spice">0</div>
+      <div class="stat-label">🌶 Spice Tokens</div>
+    </div>
+    <div class="stat sugar">
+      <div class="stat-num" id="stat-sugar">0</div>
+      <div class="stat-label">🍬 Sugar Tokens</div>
+    </div>
+    <div class="stat total">
+      <div class="stat-num" id="stat-revenue">₹0</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="switchPage('generate')">Generate Tokens</button>
+  <button class="tab" onclick="switchPage('scan')">Scan & Verify</button>
+  <button class="tab" onclick="switchPage('history')">History</button>
+  <button class="tab" onclick="switchPage('settings')">⚙ Settings</button>
+</div>
+
+<div class="main">
+
+  <!-- GENERATE PAGE -->
+  <div class="page active" id="page-generate">
+    <div class="stall-grid">
+
+      <!-- SPICE STALL -->
+      <div class="stall-card spice">
+        <div>
+          <div class="stall-emoji">🌶️</div>
+          <div class="stall-name">Spice</div>
+        </div>
+        <div class="price-input-row">
+          <label>Price (₹)</label>
+          <input type="number" id="spice-price" value="50" min="1" />
+        </div>
+        <div class="price-input-row">
+          <label>Qty</label>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty('spice',-1)">−</button>
+            <span class="qty-val" id="spice-qty">1</span>
+            <button class="qty-btn" onclick="changeQty('spice',1)">+</button>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--muted);">
+          Total: <strong style="color:var(--text)" id="spice-total">₹50</strong>
+        </div>
+        <button class="gen-btn" onclick="generateToken('spice')">Generate Token</button>
+      </div>
+
+      <!-- SUGAR STALL -->
+      <div class="stall-card sugar">
+        <div>
+          <div class="stall-emoji">🍬</div>
+          <div class="stall-name">Sugar</div>
+        </div>
+        <div class="price-input-row">
+          <label>Price (₹)</label>
+          <input type="number" id="sugar-price" value="30" min="1" />
+        </div>
+        <div class="price-input-row">
+          <label>Qty</label>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty('sugar',-1)">−</button>
+            <span class="qty-val" id="sugar-qty">1</span>
+            <button class="qty-btn" onclick="changeQty('sugar',1)">+</button>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--muted);">
+          Total: <strong style="color:var(--text)" id="sugar-total">₹30</strong>
+        </div>
+        <button class="gen-btn" onclick="generateToken('sugar')">Generate Token</button>
+      </div>
+
+    </div>
+
+    <div class="tokens-section">
+      <div class="section-title">Recent Tokens</div>
+      <div class="token-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Stall</th>
+              <th>Token ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Time</th>
+              <th>QR</th>
+            </tr>
+          </thead>
+          <tbody id="token-list-body">
+            <tr><td colspan="6" class="empty-state">No tokens generated yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCAN PAGE -->
+  <div class="page" id="page-scan">
+    <div class="scan-layout">
+      <div class="scan-card">
+        <div class="scan-title">📷 Scan QR Code</div>
+
+        <!-- camera viewport -->
+        <div style="position:relative;width:100%;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:1;">
+          <video id="qr-video" style="width:100%;height:100%;object-fit:cover;display:block;" playsinline muted></video>
+          <canvas id="qr-canvas" style="display:none;"></canvas>
+          <!-- targeting overlay -->
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+            <div id="scan-overlay" style="width:65%;aspect-ratio:1;border:2px solid rgba(255,255,255,0.6);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);display:none;"></div>
+          </div>
+          <!-- status chip -->
+          <div id="cam-chip" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;font-size:12px;padding:4px 12px;border-radius:20px;white-space:nowrap;display:none;"></div>
+        </div>
+
+        <button class="scan-btn" id="camera-btn" onclick="toggleCamera()"
+          style="width:100%;margin-top:0.75rem;background:var(--surface2);color:var(--text);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0;padding:0.65rem;">
+          📷 Start Camera
+        </button>
+
+        <div class="manual-row" style="margin-top:0.75rem;">
+          <input type="text" id="manual-token" placeholder="Or enter token ID manually..." />
+          <button class="scan-btn" onclick="verifyManual()">Verify</button>
+        </div>
+      </div>
+
+      <div class="scan-card">
+        <div class="scan-title">✅ Verification Result</div>
+        <div class="result-box idle" id="result-box">
+          <div class="result-icon">🔍</div>
+          <div class="result-status" style="color:var(--muted)">Waiting</div>
+          <div class="result-detail">Scan or enter a token to verify</div>
+        </div>
+
+        <div style="margin-top:1rem;">
+          <div class="scan-title" style="margin-top:0.5rem;">Recent Scans</div>
+          <div id="recent-scans" style="display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div style="max-width:560px;">
+      <div class="section-title" style="margin-bottom:1.5rem;">Twilio WhatsApp Notifications</div>
+
+      <div class="stall-card" style="border-top:3px solid #25D366; gap:1.25rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:1.8rem;">💬</span>
+          <div>
+            <div style="font-weight:600;font-size:15px;">WhatsApp via Twilio</div>
+            <div style="font-size:12px;color:var(--muted);">Every accepted scan fires a message to your number</div>
+          </div>
+          <div style="margin-left:auto;">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+              <input type="checkbox" id="wa-enabled" onchange="saveSettings()" style="width:18px;height:18px;accent-color:#25D366;" />
+              <span style="font-size:13px;color:var(--muted);">Enable</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div class="price-input-row" style="flex-direction:column;align-items:flex-start;gap:0.4rem;">
+            <label>Account SID</label>
+            <input type="text" id="twilio-sid" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              style="width:100%;font-family:monospace;font-size:12px;" oninput="saveSettings()" />
+          </div>
+          <div class="price-input-row" style="flex-direction:column;align-items:flex-start;gap:0.4rem;">
+            <label>Auth Token</label>
+            <input type="password" id="twilio-token" placeholder="your_auth_token"
+              style="width:100%;font-family:monospace;font-size:12px;" oninput="saveSettings()" />
+          </div>
+          <div class="price-input-row" style="flex-direction:column;align-items:flex-start;gap:0.4rem;">
+            <label>Twilio Sandbox Number</label>
+            <input type="text" id="twilio-from" placeholder="+14155238886"
+              style="width:100%;font-family:monospace;font-size:12px;" oninput="saveSettings()" />
+            <span style="font-size:11px;color:var(--muted);">Find this in Twilio Console → Messaging → Try it out → Send a WhatsApp message</span>
+          </div>
+        </div>
+
+        <button class="scan-btn" onclick="testWhatsApp()" style="width:100%;background:#25D366;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:0;padding:0.75rem;">
+          Send Test Message
+        </button>
+
+        <div id="wa-status" style="font-size:12px;color:var(--muted);text-align:center;min-height:18px;"></div>
+      </div>
+
+      <div class="stall-card" style="margin-top:1.5rem;gap:0.75rem;">
+        <div style="font-weight:600;font-size:14px;">📋 Setup Guide</div>
+        <ol style="font-size:13px;color:var(--muted);padding-left:1.25rem;line-height:2;">
+          <li>Sign up free at <strong style="color:var(--text)">twilio.com</strong></li>
+          <li>Go to Console → Messaging → Try it out → Send a WhatsApp message</li>
+          <li>Join the sandbox: send the join code from your WhatsApp to the sandbox number</li>
+          <li><strong style="color:#F39C12">Important:</strong> Your WhatsApp (6360290846) must also join the sandbox first</li>
+          <li>Paste your SID, Auth Token and sandbox number above</li>
+          <li>Hit "Send Test Message" to verify it works</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterHistory('all', this)">All</button>
+      <button class="filter-btn" onclick="filterHistory('spice', this)">🌶 Spice</button>
+      <button class="filter-btn" onclick="filterHistory('sugar', this)">🍬 Sugar</button>
+      <button class="filter-btn" onclick="filterHistory('used', this)">Used</button>
+      <button class="filter-btn" onclick="filterHistory('valid', this)">Unused</button>
+      <button class="filter-btn" onclick="clearHistory()" style="margin-left:auto;background:#1E0A0A;border-color:#7B241C;color:#E74C3C;">Clear All</button>
+    </div>
+    <div class="token-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Stall</th>
+            <th>Token ID</th>
+            <th>Amount</th>
+            <th>Qty</th>
+            <th>Status</th>
+            <th>Generated</th>
+            <th>Scanned At</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          <tr><td colspan="7" class="empty-state">No history yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-stall" id="modal-stall-name"></div>
+    <div class="modal-token" id="modal-token-id"></div>
+    <div id="qrcode-container"></div>
+    <div class="modal-amount" id="modal-amount"></div>
+    <div class="modal-items" id="modal-items"></div>
+    <button class="print-btn" onclick="window.print()">🖨 Print Token</button>
+  </div>
+</div>
+
+<script>
+let tokens = JSON.parse(localStorage.getItem('ff_tokens') || '{}');
+let qty = { spice: 1, sugar: 1 };
+let currentFilter = 'all';
+
+// ── Twilio Settings ──────────────────────────────────────────
+function saveSettings() {
+  const cfg = {
+    enabled: document.getElementById('wa-enabled').checked,
+    sid:     document.getElementById('twilio-sid').value.trim(),
+    token:   document.getElementById('twilio-token').value.trim(),
+    from:    document.getElementById('twilio-from').value.trim()
+  };
+  localStorage.setItem('ff_twilio', JSON.stringify(cfg));
+}
+
+function loadSettings() {
+  const cfg = JSON.parse(localStorage.getItem('ff_twilio') || '{}');
+  if (cfg.sid)     document.getElementById('twilio-sid').value   = cfg.sid;
+  if (cfg.token)   document.getElementById('twilio-token').value = cfg.token;
+  if (cfg.from)    document.getElementById('twilio-from').value  = cfg.from;
+  if (cfg.enabled) document.getElementById('wa-enabled').checked = cfg.enabled;
+}
+
+function getTwilioCfg() {
+  return JSON.parse(localStorage.getItem('ff_twilio') || '{}');
+}
+
+async function sendWhatsApp(message) {
+  const cfg = getTwilioCfg();
+  if (!cfg.enabled || !cfg.sid || !cfg.token || !cfg.from) return;
+
+  const to = 'whatsapp:+916360290846';
+  const from = 'whatsapp:' + cfg.from;
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${cfg.sid}/Messages.json`;
+  const creds = btoa(cfg.sid + ':' + cfg.token);
+
+  try {
+    const body = new URLSearchParams({ To: to, From: from, Body: message });
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + creds,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: body.toString()
+    });
+    const data = await res.json();
+    if (data.sid) {
+      console.log('WhatsApp sent:', data.sid);
+      return true;
+    } else {
+      console.error('Twilio error:', data.message);
+      return false;
+    }
+  } catch (e) {
+    console.error('WhatsApp send failed:', e);
+    return false;
+  }
+}
+
+async function testWhatsApp() {
+  const status = document.getElementById('wa-status');
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Sending test message…';
+  const ok = await sendWhatsApp('🎪 FoodFest Test\nWhatsApp notifications are working! ✅');
+  if (ok) {
+    status.style.color = '#25D366';
+    status.textContent = '✅ Test message sent! Check your WhatsApp.';
+  } else {
+    status.style.color = '#E74C3C';
+    status.textContent = '❌ Failed — check your SID, token and sandbox number.';
+  }
+}
+
+function save() {
+  localStorage.setItem('ff_tokens', JSON.stringify(tokens));
+  updateStats();
+}
+
+function updateStats() {
+  const all = Object.values(tokens);
+  const spice = all.filter(t => t.stall === 'spice');
+  const sugar = all.filter(t => t.stall === 'sugar');
+  const revenue = all.filter(t => t.used).reduce((s, t) => s + t.amount, 0);
+  document.getElementById('stat-spice').textContent = spice.length;
+  document.getElementById('stat-sugar').textContent = sugar.length;
+  document.getElementById('stat-revenue').textContent = '₹' + revenue;
+}
+
+function genId() {
+  return Math.random().toString(36).substr(2, 8).toUpperCase();
+}
+
+function changeQty(stall, delta) {
+  qty[stall] = Math.max(1, (qty[stall] || 1) + delta);
+  document.getElementById(stall + '-qty').textContent = qty[stall];
+  recalcTotal(stall);
+}
+
+function recalcTotal(stall) {
+  const price = parseInt(document.getElementById(stall + '-price').value) || 0;
+  const q = qty[stall] || 1;
+  document.getElementById(stall + '-total').textContent = '₹' + (price * q);
+}
+
+document.getElementById('spice-price').addEventListener('input', () => recalcTotal('spice'));
+document.getElementById('sugar-price').addEventListener('input', () => recalcTotal('sugar'));
+
+function generateToken(stall) {
+  const price = parseInt(document.getElementById(stall + '-price').value) || 0;
+  const q = qty[stall] || 1;
+  const amount = price * q;
+  const id = stall.toUpperCase().substr(0, 3) + '-' + genId();
+  const now = new Date();
+
+  tokens[id] = {
+    id,
+    stall,
+    price,
+    qty: q,
+    amount,
+    used: false,
+    createdAt: now.toISOString(),
+    usedAt: null
+  };
+
+  save();
+  renderTokenList();
+  renderHistory();
+  showQR(id);
+}
+
+function showQR(tokenId) {
+  const t = tokens[tokenId];
+  const modal = document.getElementById('qr-modal');
+  const emoji = t.stall === 'spice' ? '🌶️' : '🍬';
+  const color = t.stall === 'spice' ? '#C0392B' : '#3498DB';
+
+  document.getElementById('modal-stall-name').textContent = emoji + ' ' + t.stall.toUpperCase();
+  document.getElementById('modal-stall-name').style.color = color;
+  document.getElementById('modal-token-id').textContent = tokenId;
+  document.getElementById('modal-amount').textContent = '₹' + t.amount;
+  document.getElementById('modal-items').textContent = t.qty + ' item(s) × ₹' + t.price;
+
+  const container = document.getElementById('qrcode-container');
+  container.innerHTML = '';
+  new QRCode(container, {
+    text: tokenId,
+    width: 200,
+    height: 200,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('qr-modal').classList.remove('open');
+}
+
+function renderTokenList() {
+  const body = document.getElementById('token-list-body');
+  const all = Object.values(tokens).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 20);
+  if (!all.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-state">No tokens generated yet</td></tr>';
+    return;
+  }
+  body.innerHTML = all.map(t => `
+    <tr>
+      <td><span class="badge ${t.stall}">${t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar'}</span></td>
+      <td><span class="token-code">${t.id}</span></td>
+      <td class="amount">₹${t.amount}</td>
+      <td><span class="badge ${t.used ? 'used' : 'valid'}">${t.used ? 'Used' : 'Valid'}</span></td>
+      <td class="time-cell">${fmtTime(t.createdAt)}</td>
+      <td><button onclick="showQR('${t.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;" title="Show QR">🔳</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderHistory(filter) {
+  filter = filter || currentFilter;
+  const body = document.getElementById('history-body');
+  let all = Object.values(tokens).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (filter === 'spice') all = all.filter(t => t.stall === 'spice');
+  else if (filter === 'sugar') all = all.filter(t => t.stall === 'sugar');
+  else if (filter === 'used') all = all.filter(t => t.used);
+  else if (filter === 'valid') all = all.filter(t => !t.used);
+
+  if (!all.length) {
+    body.innerHTML = '<tr><td colspan="7" class="empty-state">No records</td></tr>';
+    return;
+  }
+  body.innerHTML = all.map(t => `
+    <tr>
+      <td><span class="badge ${t.stall}">${t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar'}</span></td>
+      <td><span class="token-code">${t.id}</span></td>
+      <td class="amount">₹${t.amount}</td>
+      <td>${t.qty}</td>
+      <td><span class="badge ${t.used ? 'used' : 'valid'}">${t.used ? 'Used' : 'Valid'}</span></td>
+      <td class="time-cell">${fmtTime(t.createdAt)}</td>
+      <td class="time-cell">${t.usedAt ? fmtTime(t.usedAt) : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function filterHistory(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory(f);
+}
+
+function clearHistory() {
+  if (confirm('Clear ALL token data? This cannot be undone.')) {
+    tokens = {};
+    save();
+    renderTokenList();
+    renderHistory();
+  }
+}
+
+function verifyToken(tokenId) {
+  tokenId = tokenId.trim().toUpperCase();
+  const box = document.getElementById('result-box');
+  box.className = 'result-box';
+
+  if (!tokens[tokenId]) {
+    box.classList.add('error');
+    box.innerHTML = `
+      <div class="result-icon">❌</div>
+      <div class="result-status">Invalid Token</div>
+      <div class="result-detail">Token <code style="color:#E74C3C">${tokenId}</code> not found</div>
+    `;
+    addRecentScan(tokenId, 'invalid');
+    return;
+  }
+
+  const t = tokens[tokenId];
+
+  if (t.used) {
+    box.classList.add('error');
+    const usedAt = t.usedAt ? fmtTime(t.usedAt) : 'earlier';
+    box.innerHTML = `
+      <div class="result-icon">⚠️</div>
+      <div class="result-status">Already Used</div>
+      <div class="result-stall-badge"><span class="badge ${t.stall}">${t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar'}</span></div>
+      <div class="result-amount">₹${t.amount}</div>
+      <div class="result-detail">This token was already scanned at ${usedAt}</div>
+    `;
+    addRecentScan(tokenId, 'used');
+    return;
+  }
+
+  // Mark as used
+  tokens[tokenId].used = true;
+  tokens[tokenId].usedAt = new Date().toISOString();
+  save();
+  renderTokenList();
+  renderHistory();
+
+  // 🔔 WhatsApp notification
+  const stallLabel = t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar';
+  const waMsg = `🎪 FoodFest Order Placed!\n\n` +
+    `Stall: ${stallLabel}\n` +
+    `Token: ${tokenId}\n` +
+    `Items: ${t.qty} × ₹${t.price}\n` +
+    `Total: ₹${t.amount}\n` +
+    `Time: ${new Date().toLocaleTimeString()}`;
+  sendWhatsApp(waMsg);
+
+  box.classList.add('success');
+  box.innerHTML = `
+    <div class="result-icon">✅</div>
+    <div class="result-status">Token Accepted!</div>
+    <div class="result-stall-badge"><span class="badge ${t.stall}">${t.stall === 'spice' ? '🌶 Spice' : '🍬 Sugar'}</span></div>
+    <div class="result-amount">₹${t.amount}</div>
+    <div class="result-detail">${t.qty} item(s) — Enjoy your food! 🎉</div>
+  `;
+  addRecentScan(tokenId, 'accepted');
+}
+
+function addRecentScan(tokenId, status) {
+  const el = document.createElement('div');
+  const colors = { accepted: '#27AE60', used: '#E74C3C', invalid: '#888' };
+  const labels = { accepted: '✅ Accepted', used: '⚠️ Already Used', invalid: '❌ Invalid' };
+  el.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0.75rem;border-radius:8px;background:var(--surface2);font-size:12px;border-left:3px solid ${colors[status]}`;
+  el.innerHTML = `<span class="token-code">${tokenId}</span><span style="color:${colors[status]}">${labels[status]}</span>`;
+  const container = document.getElementById('recent-scans');
+  container.prepend(el);
+  while (container.children.length > 6) container.removeChild(container.lastChild);
+}
+
+function verifyManual() {
+  const val = document.getElementById('manual-token').value;
+  if (val.trim()) {
+    verifyToken(val);
+    document.getElementById('manual-token').value = '';
+  }
+}
+
+document.getElementById('manual-token').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verifyManual();
+});
+
+// ── Camera / jsQR scanner ────────────────────────────────────
+let cameraActive = false;
+let videoStream = null;
+let scanLoop = null;
+let lastScanned = '';
+let lastScannedAt = 0;
+
+function toggleCamera() {
+  cameraActive ? stopCamera() : startCamera();
+}
+
+async function startCamera() {
+  const btn = document.getElementById('camera-btn');
+  const chip = document.getElementById('cam-chip');
+  btn.textContent = 'Starting…';
+  btn.disabled = true;
+
+  try {
+    videoStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+    });
+  } catch (err) {
+    btn.textContent = '📷 Start Camera';
+    btn.disabled = false;
+    const msg = err.name === 'NotAllowedError'
+      ? '❌ Camera permission denied.\n\nFix: Click the 🔒 lock icon in your browser address bar → Site settings → Camera → Allow → Refresh.'
+      : '❌ Camera error: ' + err.message + '\n\nTry using the manual token entry below.';
+    alert(msg);
+    return;
+  }
+
+  const video = document.getElementById('qr-video');
+  video.srcObject = videoStream;
+  await video.play();
+
+  cameraActive = true;
+  btn.textContent = '⏹ Stop Camera';
+  btn.disabled = false;
+  btn.style.color = '#E74C3C';
+
+  document.getElementById('scan-overlay').style.display = 'block';
+  chip.style.display = 'block';
+  chip.textContent = '🔍 Scanning…';
+
+  const canvas = document.getElementById('qr-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function tick() {
+    if (!cameraActive) return;
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) {
+        const now = Date.now();
+        if (code.data !== lastScanned || now - lastScannedAt > 3000) {
+          lastScanned = code.data;
+          lastScannedAt = now;
+          chip.textContent = '✅ QR detected!';
+          chip.style.color = '#2ECC71';
+          verifyToken(code.data);
+          setTimeout(() => { chip.textContent = '🔍 Scanning…'; chip.style.color = '#fff'; }, 2000);
+        }
+      }
+    }
+    scanLoop = requestAnimationFrame(tick);
+  }
+  scanLoop = requestAnimationFrame(tick);
+}
+
+function stopCamera() {
+  cameraActive = false;
+  if (scanLoop) { cancelAnimationFrame(scanLoop); scanLoop = null; }
+  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+  const video = document.getElementById('qr-video');
+  video.srcObject = null;
+  document.getElementById('scan-overlay').style.display = 'none';
+  document.getElementById('cam-chip').style.display = 'none';
+  const btn = document.getElementById('camera-btn');
+  btn.textContent = '📷 Start Camera';
+  btn.style.color = '';
+}
+
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event.target.classList.add('active');
+  if (page !== 'scan' && cameraActive) stopCamera();
+  if (page === 'history') renderHistory();
+}
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + d.toLocaleDateString([], { day: '2-digit', month: 'short' });
+}
+
+// Init
+loadSettings();
+updateStats();
+renderTokenList();
+recalcTotal('spice');
+recalcTotal('sugar');
+</script>
+</body>
+</html>
